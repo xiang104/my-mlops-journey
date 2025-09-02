@@ -1,0 +1,35 @@
+# 1. 給這個 workflow 一個名字，會顯示在 GitHub Actions 的頁面上
+name: Python Model Training CI
+
+# 2. 定義觸發這個 workflow 的事件
+on:
+  push:
+    branches: [ "main" ] # 只有當推送到 main 分支時，才會觸發
+
+# 3. 定義 workflow 中要執行的任務 (jobs)
+jobs:
+  build-and-train:
+    # 4. 指定運行這個 job 的虛擬機環境，我們使用最新的 Ubuntu
+    runs-on: ubuntu-latest
+
+    # 5. 定義這個 job 裡面要執行的所有步驟 (steps)
+    steps:
+      # 步驟一：從 GitHub 下載你的程式碼到虛擬機上
+      - name: Checkout repository
+        uses: actions/checkout@v4 # 這是一個官方寫好的 "action"，專門用來拉取程式碼
+
+      # 步驟二：設定 Python 環境
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5 # 這是另一個官方 action，用來安裝指定版本的 Python
+        with:
+          python-version: '3.10'
+
+      # 步驟三：安裝 Python 依賴套件
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 步驟四：執行我們的訓練腳本！
+      - name: Run training script
+        run: python train.py
